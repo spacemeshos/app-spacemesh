@@ -17,8 +17,6 @@ Current Features:
 
 ### Get the [Ledger App Builder](https://github.com/LedgerHQ/ledger-app-builder) Docker image
 
-Note: These instructions have been tested on Linux and macOS. They may differ slightly for other platforms. Feel free to open an issue in this repository if you encounter issues on other platforms.
-
 Pull the latest "full" image:
 ```
 > docker pull ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
