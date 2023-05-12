@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/solana-labs/ledger-app-solana.svg?branch=master)](https://travis-ci.org/solana-labs/ledger-app-solana)
-
 # Spacemesh app for Ledger Wallet
 
 ## Overview
