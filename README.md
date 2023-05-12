@@ -2,7 +2,7 @@
 
 ## Overview
 
-This app adds support for the Spacemesh native token to Ledger Nano S hardware wallet.
+This app adds support for the Spacemesh native token to Ledger hardware wallets.
 
 Current Features:
 - Pubkey queries
@@ -10,28 +10,32 @@ Current Features:
 - Blind sign arbitrary transactions (Enabled via settings)
 
 ## Prerequisites
+
 ### For building the app
 * [Install Docker](https://docs.docker.com/get-docker/)
 * For Linux hosts, install the Ledger Nano [udev rules](https://github.com/LedgerHQ/udev-rules)
-#### Build the [Ledger App Builder](https://developers.ledger.com/docs/nano-app/build/) Docker image
-1. Clone the git repository
+
+#### Get the [Ledger App Builder](https://github.com/LedgerHQ/ledger-app-builder) Docker image
+
+Note: These instructions are for building on Linux. They may differ slightly for other platforms.
+
+1. Pull the latest "full" image
 ```
-git clone https://github.com/LedgerHQ/ledger-app-builder.git
+> docker pull ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
 ```
-2. Change directories
+  * You may try to [build the container image yourself](https://github.com/LedgerHQ/ledger-app-builder#build-the-container-image) but we don't recommend doing so. We recommend using the latest image as described above.
+
+2. Run the image
 ```
-cd ledger-app-builder
+> docker run --rm -ti  -v "$(realpath .):/app" --privileged ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
 ```
-3. Checkout the target commit
+  * The `--privileged` flag is required to allow the Docker container to access your Ledger device via USB
+  * If permissions errors are encountered, ensure that your user is in the `docker` group and that the session has been restarted
+
+3. Set `BOLOS_SDK` to [the correct SDK name for your device](https://github.com/LedgerHQ/ledger-app-builder#compile-your-app-in-the-container), then run `make` inside the Docker container. E.g., for Nano S:
 ```
-git checkout 73c9e07
+bash-5.1# BOLOS_SDK=$NANOS_SDK make
 ```
-4. Build the image
-```
-docker build -t ledger-app-builder:73c9e07 .
-```
-  * If permissions errors are encountered, ensure that your user is in the `docker`
-group and that the session has been restarted
 
 ### For working with the device
 #### Install Python3 PIP
