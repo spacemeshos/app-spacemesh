@@ -71,7 +71,7 @@ Tap right on the device to view the (randomly generated) Public Key, then press 
 ```
 > python3 -m ledgerblue.loadApp --curve ed25519 --appFlags 0xa00  --path "44'/540'" --tlv --targetId 0x33100004 --targetVersion="" --apiLevel 1 --delete --fileName bin/app.hex --appName "Spacemesh" --appVersion "0.1.0" --dataSize $((0x`cat debug/app.map |grep _envram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'` - 0x`cat debug/app.map |grep _nvram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'`)) `ICONHEX=\`python3 $BOLOS_SDK/icon3.py --hexbitmaponly icons/nanox_app_spacemesh.gif  2>/dev/null\` ; [ ! -z "$ICONHEX" ] && echo "--icon $ICONHEX"`
 ```
-  * Replace `$BOLOS_SDK` with the location of the checked-out copy of the [Ledger SDK](https://github.com/LedgerHQ/ledger-secure-sdk). Note that, if this location is wrong or the `icon3.py` script is not found, the app will appear on the device with an empty icon.
+  * Make sure `$BOLOS_SDK` is set to the location of the checked-out copy of the [Ledger SDK](https://github.com/LedgerHQ/ledger-secure-sdk). Note that, if this location is wrong or the `icon3.py` script is not found, the app will appear on the device with an empty icon.
   * Note that the `--targetId` flag and the icon filename will differ depending which Ledger device you're using.
 
 ### Using `docker-make`
