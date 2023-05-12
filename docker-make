@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-docker_tag=73c9e07
-docker_image_base=ledger-app-builder
+docker_tag=latest
+docker_image_base=ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder
 docker_image="${docker_image_base}:${docker_tag}"
 
 if ! docker image inspect "$docker_image" &>/dev/null; then
@@ -37,7 +37,7 @@ owner="$user:$group"
 IFS='' read -r -d '' container_script <<EOF
 export "BOLOS_SDK=\$$bolos_sdk_var"
 make ${*}
-chown -fR $owner /app/{bin,debug,dep,libsol/target_sdk,obj,src/glyphs.{c,h}}
+chown -fR $owner /app/{bin,debug,dep,obj,src/glyphs.{c,h}}
 EOF
 
-docker run --rm -t -v "$here:/app" "ledger-app-builder:$docker_tag" /bin/bash -c "$container_script"
+docker run --rm -t -v "$here:/app" "$docker_image" /bin/bash -c "$container_script"
