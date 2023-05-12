@@ -63,12 +63,15 @@ The simplest way to load the app is to build it using the Docker image as descri
 ```
 bash-5.1# BOLOS_SDK=$NANOS_SDK make load
 ```
+Tap right on the device to view the (randomly generated) Public Key, then press both buttons to "Allow unsafe manager." If the app is already installed, you'll be prompted to delete it. Then when you see "Install app Spacemesh", tap right a few times through the Identifier and Code Id screens until you see "Perform Installation." Press both buttons and enter the device PIN to perform the installation.
+
   * If you get a segmentation fault during the load process (fairly common on Linux), try physically disconnecting and reconnecting the Ledger device, then close and reopen the Docker instance.
   * If you get the error `ledgerblue.commException.CommException: Exception : No dongle found` on macOS, try running the full load command natively (i.e., outside of the Docker container) using the latest version of `ledgerblue`. Install `ledgerblue` as outlined above, then copy and paste the load command, which should look something like this:
 
 ```
-> python3 -m ledgerblue.loadApp --curve ed25519 --appFlags 0xa00  --path "44'/540'" --tlv --targetId 0x33100004 --targetVersion="" --apiLevel 1 --delete --fileName bin/app.hex --appName "Spacemesh" --appVersion "0.1.0" --dataSize $((0x`cat debug/app.map |grep _envram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'` - 0x`cat debug/app.map |grep _nvram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'`)) `ICONHEX=\`python3 /opt/nanosplus-secure-sdk/icon3.py --hexbitmaponly icons/nanox_app_spacemesh.gif  2>/dev/null\` ; [ ! -z "$ICONHEX" ] && echo "--icon $ICONHEX"`
+> python3 -m ledgerblue.loadApp --curve ed25519 --appFlags 0xa00  --path "44'/540'" --tlv --targetId 0x33100004 --targetVersion="" --apiLevel 1 --delete --fileName bin/app.hex --appName "Spacemesh" --appVersion "0.1.0" --dataSize $((0x`cat debug/app.map |grep _envram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'` - 0x`cat debug/app.map |grep _nvram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'`)) `ICONHEX=\`python3 $BOLOS_SDK/icon3.py --hexbitmaponly icons/nanox_app_spacemesh.gif  2>/dev/null\` ; [ ! -z "$ICONHEX" ] && echo "--icon $ICONHEX"`
 ```
+  * Replace `$BOLOS_SDK` with the location of the checked-out copy of the [Ledger SDK](https://github.com/LedgerHQ/ledger-secure-sdk). Note that, if this location is wrong or the `icon3.py` script is not found, the app will appear on the device with an empty icon.
   * Note that the `--targetId` flag and the icon filename will differ depending which Ledger device you're using.
 
 ### Using `docker-make`
