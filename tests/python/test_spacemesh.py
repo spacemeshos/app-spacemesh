@@ -10,7 +10,7 @@ from .apps.solana_utils import enable_blind_signing, enable_short_public_key, en
 
 class TestGetPublicKey:
 
-    def test_solana_get_public_key_ok(self, backend, navigator, test_name):
+    def test_spacemesh_get_public_key_ok(self, backend, navigator, test_name):
         sol = SolanaClient(backend)
         from_public_key = sol.get_public_key(SOL_PACKED_DERIVATION_PATH)
 
@@ -29,7 +29,7 @@ class TestGetPublicKey:
         assert sol.get_async_response().data == from_public_key
 
 
-    def test_solana_get_public_key_refused(self, backend, navigator, test_name):
+    def test_spacemesh_get_public_key_refused(self, backend, navigator, test_name):
         sol = SolanaClient(backend)
         with sol.send_public_key_with_confirm(SOL_PACKED_DERIVATION_PATH):
             backend.raise_policy = RaisePolicy.RAISE_NOTHING
@@ -49,7 +49,7 @@ class TestGetPublicKey:
 
 class TestMessageSigning:
 
-    def test_solana_simple_transfer_ok_1(self, backend, navigator, test_name):
+    def test_spacemesh_simple_transfer_ok_1(self, backend, navigator, test_name):
         sol = SolanaClient(backend)
         from_public_key = sol.get_public_key(SOL_PACKED_DERIVATION_PATH)
 
@@ -64,7 +64,7 @@ class TestMessageSigning:
         verify_signature(from_public_key, message, signature)
 
 
-    def test_solana_simple_transfer_ok_2(self, backend, navigator, test_name):
+    def test_spacemesh_simple_transfer_ok_2(self, backend, navigator, test_name):
         sol = SolanaClient(backend)
         from_public_key = sol.get_public_key(SOL_PACKED_DERIVATION_PATH_2)
 
@@ -79,7 +79,7 @@ class TestMessageSigning:
         verify_signature(from_public_key, message, signature)
 
 
-    def test_solana_simple_transfer_refused(self, backend, navigator, test_name):
+    def test_spacemesh_simple_transfer_refused(self, backend, navigator, test_name):
         sol = SolanaClient(backend)
         from_public_key = sol.get_public_key(SOL_PACKED_DERIVATION_PATH)
 
