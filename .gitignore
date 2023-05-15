@@ -20,3 +20,4 @@ __pycache__
 
 tests/elfs/
 tests/python/snapshots-tmp/
+.python-version
