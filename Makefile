@@ -1,6 +1,6 @@
 # ****************************************************************************
-#    Ledger App Solana
-#    (c) 2020 Ledger SAS.
+#    Ledger App Spacemesh
+#    (c) 2023 Spacemesh
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -34,19 +34,19 @@ APP_LOAD_PARAMS += --appFlags 0x800 # APPLICATION_FLAG_LIBRARY
 else
 APP_LOAD_PARAMS += --appFlags 0xa00 # APPLICATION_FLAG_LIBRARY + APPLICATION_FLAG_BOLOS_SETTINGS
 endif
-APP_LOAD_PARAMS += --path "44'/501'"
+APP_LOAD_PARAMS += --path "44'/540'"
 APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
-APPNAME      = "Solana"
-APPVERSION_M = 1
-APPVERSION_N = 4
+APPNAME      = "Spacemesh"
+APPVERSION_M = 0
+APPVERSION_N = 1
 APPVERSION_P = 0
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
-    ICONNAME=icons/nanos_app_solana.gif
+    ICONNAME=icons/nanos_app_spacemesh.gif
 else
-    ICONNAME=icons/nanox_app_solana.gif
+    ICONNAME=icons/nanox_app_spacemesh.gif
 endif
 
 ################
@@ -154,4 +154,4 @@ include $(BOLOS_SDK)/Makefile.rules
 dep/%.d: %.c Makefile
 
 listvariants:
-	@echo VARIANTS COIN solana
+	@echo VARIANTS COIN spacemesh

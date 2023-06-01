@@ -1,88 +1,80 @@
-[![Build Status](https://travis-ci.org/solana-labs/ledger-app-solana.svg?branch=master)](https://travis-ci.org/solana-labs/ledger-app-solana)
-
-# Solana app for Ledger Wallet
+# Spacemesh app for Ledger Wallet
 
 ## Overview
 
-This app adds support for the Solana native token to Ledger Nano S hardware wallet.
+This app adds support for the Spacemesh native token to Ledger hardware wallets.
 
 Current Features:
 - Pubkey queries
-- Parse, display and sign all Solana CLI generated transaction formats
+- Parse, display and sign all Spacemesh CLI generated transaction formats
 - Blind sign arbitrary transactions (Enabled via settings)
 
 ## Prerequisites
+
 ### For building the app
 * [Install Docker](https://docs.docker.com/get-docker/)
 * For Linux hosts, install the Ledger Nano [udev rules](https://github.com/LedgerHQ/udev-rules)
-#### Build the [Ledger App Builder](https://developers.ledger.com/docs/nano-app/build/) Docker image
-1. Clone the git repository
+
+### Get the [Ledger App Builder](https://github.com/LedgerHQ/ledger-app-builder) Docker image
+
+Pull the latest "full" image:
 ```
-git clone https://github.com/LedgerHQ/ledger-app-builder.git
+> docker pull ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
 ```
-2. Change directories
-```
-cd ledger-app-builder
-```
-3. Checkout the target commit
-```
-git checkout 73c9e07
-```
-4. Build the image
-```
-docker build -t ledger-app-builder:73c9e07 .
-```
-  * If permissions errors are encountered, ensure that your user is in the `docker`
-group and that the session has been restarted
+  * You may try to [build the container image yourself](https://github.com/LedgerHQ/ledger-app-builder#build-the-container-image) but we don't recommend doing so. We recommend using the latest image as described above.
 
 ### For working with the device
-#### Install Python3 PIP
-Ubuntu Linux:
-```
-sudo apt install pip3
-```
-MacOS
-```
-brew install python3
-```
-#### Install ledgerblue python module
-```
-pip3 install ledgerblue
-```
-#### Locally clone SDK repos corresponding to those included in the Docker image
-* Setup environment
-```bash
-cat >>"${HOME}"/.profile <<EOF
-LEDGER_SDK_BASE_PATH= # set to a writable path
-: "${LEDGER_SDK_BASE_PATH:?}"
-export NANOS_SDK="${LEDGER_SDK_BASE_PATH}"/nanos-secure-sdk
-export NANOX_SDK="${LEDGER_SDK_BASE_PATH}"/nanox-secure-sdk
-export NANOSP_SDK="${LEDGER_SDK_BASE_PATH}"/nanosplus-secure-sdk
-EOF
-```
-* Update the current session's environment
-```bash
-. "${HOME}"/.profile # Or close and reopen your terminal
-```
-* Clone the repositories
-```bash
-# Nano S SDK
-git clone --branch 2.1.0 --depth 1 https://github.com/LedgerHQ/nanos-secure-sdk.git "${NANOS_SDK}"
 
-# Nano X SDK
-git clone --branch 2.0.2-2 --depth 1 https://github.com/LedgerHQ/nanox-secure-sdk.git "${NANOX_SDK}"
+If you're able to successfully build and load the app using the docker images as described below, you probably don't need to install `ledgerblue` as it's pre-installed in the docker images. If, however, you have issues with the docker build and load process you can try using `ledgerblue` directly.
 
-# Nano S+ SDK
-git clone --branch 1.0.3 --depth 1 https://github.com/LedgerHQ/nanosplus-secure-sdk.git "${NANOSP_SDK}"
-```
+Follow the instructions in the [blue-loader-python](https://github.com/LedgerHQ/blue-loader-python) repository to install the `ledgerblue` python module. We strongly recommend using a virtualenv as suggested.
 
 ### For running the test suite
 * [Rust](https://rustup.rs/)
 * Solana [system dependencies](https://github.com/solana-labs/solana/#1-install-rustc-cargo-and-rustfmt)
 
 ## Build
-It is highly recommended that you read and understand the [Ledger App Builder](https://developers.ledger.com/docs/nano-app/build/)
-build process before proceeding.  A convenience wrapper script (`./docker-make`) has been provided for simplicity
+
+We recommend building using Ledger's provided ledger-app-builder Docker image. The full steps follow. A convenience wrapper script (`./docker-make`) has been provided for simplicity but it may not work out of the box on all configurations. Instructions on using this script are below.
+
+### Using the Ledger App Builder Docker image
+
+Note: These instructions have been tested on Linux and macOS. They may differ slightly for other platforms. Feel free to open an issue in this repository if you encounter issues on other platforms.
+
+1. Pull the latest "full" image (as described above)
+
+2. Run the image
+```
+> docker run --rm -ti  -v "$(realpath .):/app" --privileged ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
+```
+  * The `--privileged` flag is required to allow the Docker container to access your Ledger device via USB
+  * If permissions errors are encountered, ensure that your user is in the `docker` group and that the session has been restarted
+
+3. Set `BOLOS_SDK` to [the correct SDK name for your device](https://github.com/LedgerHQ/ledger-app-builder#compile-your-app-in-the-container), then run `make` inside the Docker container. E.g., for Nano S:
+```
+bash-5.1# BOLOS_SDK=$NANOS_SDK make
+```
+
+## Load
+
+It's possible to load the app directly onto a physical Ledger device using a process called sideloading, using the `ledgerblue` Python module. Note that **sideloading is only supported on Nano S and Blue devices, and not on Nano X**. See the [ledgerblue documentation](https://github.com/LedgerHQ/blue-loader-python#supported-devices) for more information.
+
+The simplest way to load the app is to build it using the Docker image as described above, then run the load command inside the container:
+```
+bash-5.1# BOLOS_SDK=$NANOS_SDK make load
+```
+Tap right on the device to view the (randomly generated) Public Key, then press both buttons to "Allow unsafe manager." If the app is already installed, you'll be prompted to delete it. Then when you see "Install app Spacemesh", tap right a few times through the Identifier and Code Id screens until you see "Perform Installation." Press both buttons and enter the device PIN to perform the installation.
+
+  * If you get a segmentation fault during the load process (fairly common on Linux), try physically disconnecting and reconnecting the Ledger device, then close and reopen the Docker instance.
+  * If you get the error `ledgerblue.commException.CommException: Exception : No dongle found` on macOS, try running the full load command natively (i.e., outside of the Docker container) using the latest version of `ledgerblue`. Install `ledgerblue` as outlined above, then copy and paste the load command, which should look something like this:
+
+```
+> python3 -m ledgerblue.loadApp --curve ed25519 --appFlags 0xa00  --path "44'/540'" --tlv --targetId 0x33100004 --targetVersion="" --apiLevel 1 --delete --fileName bin/app.hex --appName "Spacemesh" --appVersion "0.1.0" --dataSize $((0x`cat debug/app.map |grep _envram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'` - 0x`cat debug/app.map |grep _nvram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'`)) `ICONHEX=\`python3 $BOLOS_SDK/icon3.py --hexbitmaponly icons/nanox_app_spacemesh.gif  2>/dev/null\` ; [ ! -z "$ICONHEX" ] && echo "--icon $ICONHEX"`
+```
+  * Make sure `$BOLOS_SDK` is set to the location of the checked-out copy of the [Ledger SDK](https://github.com/LedgerHQ/ledger-secure-sdk). Note that, if this location is wrong or the `icon3.py` script is not found, the app will appear on the device with an empty icon.
+  * Note that the `--targetId` flag and the icon filename will differ depending which Ledger device you're using.
+
+### Using `docker-make`
 
 `docker-make` manages the current target SDK for you, automatically setting `BOLOS_SDK` to the
 correct path when the Docker container is launched. A `TARGET_SDK` must be specified when building
@@ -104,7 +96,7 @@ from clean and clean must be run _before_ switching
 ```
 
 ## Working with the device
-Requires that the `BOLOS_SDK` envvar [be set](https://developers.ledger.com/docs/nano-app/load/).
+Requires that the `BOLOS_SDK` envvar [be set](https://developers.ledger.com/docs/embedded-app/build-app/).
 This can be achieved by first [building](#build) for the desired target device.
 ### Load
 ```bash
